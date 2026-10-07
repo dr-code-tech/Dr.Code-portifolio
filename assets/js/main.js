@@ -4,33 +4,22 @@
 
   const revealElements = document.querySelectorAll('.reveal');
 
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
+  if ('IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.05,
     });
-  }, {
-    threshold: 0.05,
-  });
 
-  revealElements.forEach((el) => revealObserver.observe(el));
-
-  const revealElementsInView = () => {
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-
-    revealElements.forEach((el) => {
-      const bounds = el.getBoundingClientRect();
-      if (bounds.top < viewportHeight && bounds.bottom > 0) {
-        el.classList.add('visible');
-        revealObserver.unobserve(el);
-      }
-    });
-  };
-
-  window.addEventListener('scroll', revealElementsInView, { passive: true });
-  revealElementsInView();
+    revealElements.forEach((el) => revealObserver.observe(el));
+  } else {
+    revealElements.forEach((el) => el.classList.add('visible'));
+  }
 
   const techTabs = document.querySelectorAll('.tech-tab');
   const techPanels = document.querySelectorAll('.tech-panel-content');
@@ -80,6 +69,8 @@
 
   const navLinks = document.querySelectorAll('.main-nav a, .mobile-menu-inner a');
   const sections = [...document.querySelectorAll('main section')];
+  const topbar = document.querySelector('.topbar');
+  let scrollFrameRequested = false;
 
   const updateActiveLink = () => {
     let currentId = 'home';
@@ -95,7 +86,17 @@
       const href = link.getAttribute('href');
       const isActive = href && href.startsWith('#') && href.substring(1) === currentId;
       link.classList.toggle('active', isActive);
+      if (isActive) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
     });
+    topbar?.classList.toggle('is-scrolled', window.scrollY > 12);
+    scrollFrameRequested = false;
+  };
+
+  const scheduleScrollUpdate = () => {
+    if (scrollFrameRequested) return;
+    scrollFrameRequested = true;
+    window.requestAnimationFrame(updateActiveLink);
   };
 
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
@@ -168,11 +169,20 @@
     const status = contactForm.querySelector('.form-status');
     const submitButton = contactForm.querySelector('[type="submit"]');
 
+    const setStatus = (message, state = '') => {
+      if (!(status instanceof HTMLElement)) return;
+      status.textContent = message;
+      status.classList.toggle('has-message', Boolean(message));
+      status.classList.toggle('is-error', state === 'error');
+      status.classList.toggle('is-pending', state === 'pending');
+      status.classList.toggle('is-success', state === 'success');
+    };
+
     const fields = [nameField, emailField, messageField].filter(Boolean);
     fields.forEach((field) => {
       field.addEventListener('input', () => {
         field.setCustomValidity('');
-        if (status) status.textContent = '';
+        setStatus('');
       });
     });
 
@@ -191,7 +201,7 @@
       messageField.setCustomValidity(messageField.value.trim().length < 10 ? 'Please enter a message with at least 10 characters.' : '');
 
       if (!contactForm.checkValidity()) {
-        status.textContent = 'Please review the highlighted fields and try again.';
+        setStatus('Please review the highlighted fields and try again.', 'error');
         contactForm.reportValidity();
         return;
       }
@@ -206,13 +216,14 @@
       if (!endpoint) {
         const subject = encodeURIComponent(`Portfolio enquiry from ${formData.name}`);
         const body = encodeURIComponent(`${formData.message}\n\nFrom: ${formData.name}\nEmail: ${formData.email}`);
-        status.textContent = 'Opening your email app with a draft. Send it from there to deliver your message.';
+        setStatus('Opening your email app with a draft. Send it from there to deliver your message.');
         window.location.href = `mailto:denritacharles@gmail.com?subject=${subject}&body=${body}`;
         return;
       }
 
       submitButton.disabled = true;
-      status.textContent = 'Sending your message…';
+      submitButton.classList.add('is-loading');
+      setStatus('Sending your message…', 'pending');
       try {
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -220,17 +231,105 @@
           body: JSON.stringify(formData),
         });
         if (!response.ok) {
-          status.textContent = 'Your message could not be sent. Please try again or email me directly.';
+          setStatus('Your message could not be sent. Please try again or email me directly.', 'error');
           return;
         }
 
-        status.textContent = 'Your message was sent successfully.';
+        setStatus('Your message was sent successfully.', 'success');
         contactForm.reset();
       } catch (error) {
-        status.textContent = 'Unable to reach the contact service. Please try again or email me directly.';
+        setStatus('Unable to reach the contact service. Please try again or email me directly.', 'error');
         console.error('Contact form submission failed:', error);
       } finally {
         submitButton.disabled = false;
+        submitButton.classList.remove('is-loading');
+      }
+    });
+  }
+
+  const whatsappButton = document.querySelector('.whatsapp-float');
+  if (whatsappButton instanceof HTMLAnchorElement) {
+    let pointerId = null;
+    let pointerOffsetX = 0;
+    let pointerOffsetY = 0;
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+    let suppressClick = false;
+
+    const setPosition = (left, top) => {
+      const bounds = whatsappButton.getBoundingClientRect();
+      const margin = 8;
+      const maxLeft = Math.max(margin, window.innerWidth - bounds.width - margin);
+      const maxTop = Math.max(margin, window.innerHeight - bounds.height - margin);
+      whatsappButton.style.left = `${Math.min(Math.max(left, margin), maxLeft)}px`;
+      whatsappButton.style.top = `${Math.min(Math.max(top, margin), maxTop)}px`;
+      whatsappButton.style.right = 'auto';
+      whatsappButton.style.bottom = 'auto';
+    };
+
+    whatsappButton.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) return;
+      const bounds = whatsappButton.getBoundingClientRect();
+      pointerId = event.pointerId;
+      pointerOffsetX = event.clientX - bounds.left;
+      pointerOffsetY = event.clientY - bounds.top;
+      startX = event.clientX;
+      startY = event.clientY;
+      isDragging = false;
+      whatsappButton.setPointerCapture(pointerId);
+    });
+
+    whatsappButton.addEventListener('pointermove', (event) => {
+      if (event.pointerId !== pointerId) return;
+      if (!isDragging && Math.hypot(event.clientX - startX, event.clientY - startY) > 6) {
+        isDragging = true;
+        whatsappButton.classList.add('is-dragging');
+      }
+      if (isDragging) {
+        setPosition(event.clientX - pointerOffsetX, event.clientY - pointerOffsetY);
+      }
+    });
+
+    const finishPointer = (event) => {
+      if (event.pointerId !== pointerId) return;
+      if (whatsappButton.hasPointerCapture(pointerId)) {
+        whatsappButton.releasePointerCapture(pointerId);
+      }
+      suppressClick = isDragging;
+      pointerId = null;
+      isDragging = false;
+      whatsappButton.classList.remove('is-dragging');
+    };
+
+    whatsappButton.addEventListener('pointerup', finishPointer);
+    whatsappButton.addEventListener('pointercancel', finishPointer);
+    whatsappButton.addEventListener('click', (event) => {
+      if (suppressClick) {
+        event.preventDefault();
+        suppressClick = false;
+      }
+    });
+
+    whatsappButton.addEventListener('keydown', (event) => {
+      const movement = 16;
+      const directions = {
+        ArrowUp: [0, -movement],
+        ArrowDown: [0, movement],
+        ArrowLeft: [-movement, 0],
+        ArrowRight: [movement, 0],
+      };
+      const direction = directions[event.key];
+      if (!direction) return;
+      event.preventDefault();
+      const bounds = whatsappButton.getBoundingClientRect();
+      setPosition(bounds.left + direction[0], bounds.top + direction[1]);
+    });
+
+    window.addEventListener('resize', () => {
+      if (whatsappButton.style.left && whatsappButton.style.top) {
+        const bounds = whatsappButton.getBoundingClientRect();
+        setPosition(bounds.left, bounds.top);
       }
     });
   }
@@ -240,6 +339,6 @@
     copyrightYear.textContent = String(new Date().getFullYear());
   }
 
-  window.addEventListener('scroll', updateActiveLink, { passive: true });
+  window.addEventListener('scroll', scheduleScrollUpdate, { passive: true });
   updateActiveLink();
 })();

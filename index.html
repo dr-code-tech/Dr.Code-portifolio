@@ -5,20 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Dr. Code is a software engineer building digital systems that connect people, technology and ideas." />
     <title>Dr. Code | Software Engineer</title>
-    <link rel="icon" href="favicon.png" type="image/png" />
+    <link rel="icon" href="assets/img/dr-code-tech-logo.jpeg" type="image/jpeg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="assets/vendor/boxicons/css/boxicons.min.css" />
-    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/style.css?v=20261007-motion-3" />
   </head>
   <body>
     <div class="page-shell">
       <header class="topbar">
         <div class="container nav-wrap">
           <a href="#home" class="brand" aria-label="Dr. Code home">
-            <span class="brand-mark" aria-hidden="true">&lt;/&gt;</span>
-            <span>DR.CODE</span>
+            <img class="brand-logo" src="assets/img/dr-code-tech-logo.jpeg" alt="" />
           </a>
 
           <nav class="main-nav" aria-label="Main navigation">
@@ -330,34 +329,64 @@
           </div>
 
           <div class="projects-grid">
-            <article class="project-card project-featured">
-              <div class="project-thumb project-art project-art-school" aria-hidden="true">
-                <span class="project-art-label">SMART<br />SCHOOL</span>
+            <article class="project-card">
+              <div class="project-thumb project-art project-art-school">
+                <img src="assets/img/smart-school-coming-soon.png" alt="Smart School coming soon project preview" />
                 <span class="project-art-index">01 / DIGITAL SYSTEM</span>
                 <span class="project-art-orbit"></span>
               </div>
               <div class="project-body">
                 <h4>Smart School</h4>
                 <p>School management and information system for efficient administration.</p>
+                <div class="project-tech" aria-label="Project status">
+                  <span>Coming Soon</span>
+                </div>
               </div>
             </article>
 
             <article class="project-card">
-              <div class="project-thumb project-art project-art-connect" aria-hidden="true">
-                <span class="project-art-label">McD<br /><em>CONNECT</em></span>
+              <div class="project-thumb project-art project-art-connect">
+                <img src="assets/img/mc-denrita-connect.png" alt="MC Denrita Connect project preview" />
                 <span class="project-art-index">02 / DIGITAL PLATFORM</span>
                 <span class="project-art-orbit"></span>
               </div>
               <div class="project-body">
-                <h4>McD Connect</h4>
-                <p>Connected digital platform for community engagement and service access.</p>
+                <h4>MC Denrita Connect</h4>
+                <p>Community-focused digital platform designed to connect services, engagement, and digital access in a modern experience.</p>
+                <div class="project-tech" aria-label="Project features">
+                  <span>Community</span>
+                  <span>Web App</span>
+                  <span>Responsive</span>
+                </div>
+                <a class="project-link" href="https://mc-denrita-connect.onrender.com/" target="_blank" rel="noreferrer">
+                  View Live Project <span aria-hidden="true">→</span>
+                </a>
               </div>
             </article>
 
             <article class="project-card">
-              <div class="project-thumb project-art project-art-portfolio" aria-hidden="true">
-                <span class="project-art-label">&lt; DR.CODE /&gt;</span>
-                <span class="project-art-index">03 / PERSONAL PORTFOLIO</span>
+              <div class="project-thumb project-art project-art-sims">
+                <img src="assets/img/sims-logo.png" alt="SIMS education system logo" />
+                <span class="project-art-index">03 / EDUCATION SYSTEM</span>
+                <span class="project-art-orbit"></span>
+              </div>
+              <div class="project-body">
+                <h4>SIMS</h4>
+                <p>Student information management system for school records and academic information.</p>
+                <div class="project-tech" aria-label="Project features">
+                  <span>Education</span>
+                  <span>Information System</span>
+                </div>
+                <a class="project-link" href="https://sims.kesug.com/" target="_blank" rel="noreferrer">
+                  View Live Project <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </article>
+
+            <article class="project-card">
+              <div class="project-thumb project-art project-art-portfolio">
+                <img src="assets/img/dr-code-tech-logo.jpeg" alt="Dr. Code Tech logo" />
+                <span class="project-art-index">04 / PERSONAL PORTFOLIO</span>
                 <span class="project-art-orbit"></span>
               </div>
               <div class="project-body">
@@ -387,7 +416,7 @@
           </div>
 
           <div class="journey-list">
-            <article class="journey-item active">
+            <article class="journey-item active reveal">
               <div class="journey-date">
                 <span class="journey-marker" aria-hidden="true"></span>
                 <time class="year" datetime="2024-10">October 2024 — Present</time>
@@ -399,7 +428,7 @@
                 <p>Work documented in the portfolio includes web application deployment, server-side application administration, Linux server operations, and Apache configuration.</p>
               </div>
             </article>
-            <article class="journey-item">
+            <article class="journey-item reveal">
               <div class="journey-date">
                 <span class="journey-marker" aria-hidden="true"></span>
                 <time class="year" datetime="2024-10">October 2024 — Present</time>
@@ -457,7 +486,7 @@
           </div>
         </section>
 
-        <section id="contact" class="panel contact-panel">
+        <section id="contact" class="panel contact-panel reveal">
           <div class="panel-header contact-heading">
             <span class="panel-tag">07</span>
             <div>
@@ -509,6 +538,10 @@
         </section>
       </main>
 
+      <a class="whatsapp-float" href="https://wa.me/255673292616" target="_blank" rel="noreferrer" aria-label="Chat with me on WhatsApp. Drag to move, or focus and use the arrow keys." title="Chat on WhatsApp">
+        <img src="assets/img/whatsapp-3d.png" alt="" />
+      </a>
+
       <footer class="site-footer">
         <div class="container footer-wrap">
           <div class="footer-network" aria-hidden="true">
@@ -519,8 +552,7 @@
           </div>
           <div class="footer-brand">
             <a href="#home" class="brand" aria-label="DR.CODE, back to home">
-              <span class="brand-mark" aria-hidden="true">&lt;/&gt;</span>
-              <span>DR.CODE</span>
+              <img class="brand-logo" src="assets/img/dr-code-tech-logo.jpeg" alt="" />
             </a>
             <p>Building digital systems that connect people, technology and ideas.</p>
             <span class="footer-copyright">© <span id="copyright-year"></span> DR.CODE. All rights reserved.</span>
@@ -542,6 +574,6 @@
         </div>
       </footer>
     </div>
-    <script src="assets/js/main.js" defer></script>
+    <script src="assets/js/main.js?v=20261007-motion" defer></script>
   </body>
 </html>
