@@ -9,6 +9,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script>
+      (function () {
+        const STORAGE_KEY = 'dr-code-theme';
+        const savedTheme = localStorage.getItem(STORAGE_KEY);
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+        const root = document.documentElement;
+        root.setAttribute('data-theme', initialTheme);
+        root.classList.toggle('dark', initialTheme === 'dark');
+        root.classList.toggle('light', initialTheme === 'light');
+      }())
+    </script>
     <link rel="stylesheet" href="assets/vendor/boxicons/css/boxicons.min.css" />
     <link rel="stylesheet" href="assets/css/style.css?v=20261007-motion-3" />
   </head>

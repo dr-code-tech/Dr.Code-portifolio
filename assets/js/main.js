@@ -2,6 +2,37 @@
 (function () {
   document.documentElement.classList.add('js');
 
+  const STORAGE_KEY = 'dr-code-theme';
+
+  const setTheme = (theme) => {
+    const nextTheme = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    document.documentElement.classList.toggle('dark', nextTheme === 'dark');
+    document.documentElement.classList.toggle('light', nextTheme === 'light');
+    document.body.classList.toggle('theme-light', nextTheme === 'light');
+
+    const appearanceToggle = document.querySelector('.appearance-toggle');
+    if (appearanceToggle) {
+      const icon = appearanceToggle.querySelector('i');
+      const isLight = nextTheme === 'light';
+      appearanceToggle.setAttribute('aria-pressed', String(isLight));
+      appearanceToggle.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+      if (icon) {
+        icon.classList.toggle('bx-moon', !isLight);
+        icon.classList.toggle('bx-sun', isLight);
+      }
+    }
+  };
+
+  const preferredTheme = (() => {
+    const savedTheme = localStorage.getItem(STORAGE_KEY);
+    if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  })();
+
+  setTheme(preferredTheme);
+  localStorage.setItem(STORAGE_KEY, preferredTheme);
+
   const revealElements = document.querySelectorAll('.reveal');
 
   if ('IntersectionObserver' in window) {
@@ -150,14 +181,9 @@
   const appearanceToggle = document.querySelector('.appearance-toggle');
   if (appearanceToggle) {
     appearanceToggle.addEventListener('click', () => {
-      const isPressed = appearanceToggle.getAttribute('aria-pressed') === 'true';
-      appearanceToggle.setAttribute('aria-pressed', String(!isPressed));
-      document.body.classList.toggle('theme-light', !isPressed);
-      const icon = appearanceToggle.querySelector('i');
-      if (icon) {
-        icon.classList.toggle('bx-moon', isPressed);
-        icon.classList.toggle('bx-sun', !isPressed);
-      }
+      const nextTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      setTheme(nextTheme);
+      localStorage.setItem(STORAGE_KEY, nextTheme);
     });
   }
 
